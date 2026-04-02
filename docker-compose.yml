@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: permit-postgres
+    environment:
+      POSTGRES_DB: permitdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: permit_root_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d permitdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: permit-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: permit_rabbit
+      RABBITMQ_DEFAULT_PASS: permit_rabbit_2026
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  permit-service:
+    build: .
+    container_name: permit-service
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/permitdb
+      DB_USERNAME: permit_app
+      DB_PASSWORD: permit_app_2026
+      DB_ROOT_USERNAME: postgres
+      DB_ROOT_PASSWORD: permit_root_2026
+      JWT_SECRET: permit_service_jwt_secret_minimum_32_characters_2026
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: permit_rabbit
+      RABBITMQ_PASSWORD: permit_rabbit_2026
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
