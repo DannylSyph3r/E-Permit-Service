@@ -4,8 +4,10 @@ import dev.slethware.epermitservice.model.dto.request.CreatePermitRequest;
 import dev.slethware.epermitservice.model.dto.response.ApiResponse;
 import dev.slethware.epermitservice.model.dto.response.PermitResponse;
 import dev.slethware.epermitservice.model.entity.Permit;
+import dev.slethware.epermitservice.model.entity.PermitDocument;
 import dev.slethware.epermitservice.model.enums.PaymentStatus;
 import dev.slethware.epermitservice.model.enums.PermitStatus;
+import dev.slethware.epermitservice.repository.PermitDocumentRepository;
 import dev.slethware.epermitservice.repository.PermitRepository;
 import dev.slethware.epermitservice.security.TenantContext;
 import dev.slethware.epermitservice.service.event.EventPublisher;
@@ -23,7 +25,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PermitServiceImpl implements PermitService {
 
+    private static final String DOCUMENT_URL_PREFIX = "https://docs.epermit.gov/documents/";
+
     private final PermitRepository permitRepository;
+    private final PermitDocumentRepository permitDocumentRepository;
     private final PaymentService paymentService;
     private final EventPublisher eventPublisher;
 
@@ -31,8 +36,6 @@ public class PermitServiceImpl implements PermitService {
     public PermitResponse createPermit(CreatePermitRequest request) {
         String tenantId = TenantContext.getTenant();
 
-        // Persist the application immediately, before payment is attempted.
-        // The permit is recorded as PENDING regardless of payment outcome.
         Permit permit = Permit.builder()
                 .tenantId(tenantId)
                 .applicantName(request.applicantName())
@@ -46,15 +49,21 @@ public class PermitServiceImpl implements PermitService {
         permitRepository.save(permit);
         log.info("Permit {} saved for tenant: {}", permit.getId(), tenantId);
 
-        // Attempt payment, circuit breaker and retry handle transient failures.
-        // The fallback in the payment service guarantees this never throws.
+        // Auto-generate an application document for this permit.
+        PermitDocument document = PermitDocument.builder()
+                .permit(permit)
+                .documentType("APPLICATION_FORM")
+                .documentUrl(DOCUMENT_URL_PREFIX + UUID.randomUUID())
+                .build();
+        permitDocumentRepository.save(document);
+        permit.getDocuments().add(document);
+
         String reference = "PERMIT-" + UUID.randomUUID();
         PaymentStatus paymentStatus = paymentService.chargePayment(permit.getAmount(), reference);
         permit.setPaymentStatus(paymentStatus);
         permitRepository.save(permit);
         log.info("Payment status for permit {}: {}", permit.getId(), paymentStatus);
 
-        // Publish event (best-effort) failures are tolerated
         eventPublisher.publishPermitCreated(permit);
 
         return PermitResponse.from(permit);
