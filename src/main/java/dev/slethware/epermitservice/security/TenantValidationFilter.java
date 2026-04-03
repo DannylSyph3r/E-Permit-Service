@@ -24,6 +24,7 @@ public class TenantValidationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
         return path.startsWith("/api/auth/")
+                || path.startsWith("/internal/")
                 || path.startsWith("/docs")
                 || path.startsWith("/v3/api-docs")
                 || path.startsWith("/api-docs")
@@ -43,8 +44,6 @@ public class TenantValidationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Cross-validate the header tenant against the authenticated user's tenant.
-        // This prevents a user from one tenant from impersonating another.
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof User user) {
             if (!user.getTenantId().equals(tenantId)) {
