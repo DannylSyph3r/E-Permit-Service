@@ -27,7 +27,7 @@ public class AuthController {
     @PostMapping("/register")
     @Operation(
             summary = "Register a new user",
-            description = "Create a new account. The tenantId must be a whitelisted value (Ministry_Health or Ministry_Education)."
+            description = "Create a new account. The tenantId must be a whitelisted value."
     )
     public ResponseEntity<ApiResponse<Void>> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));

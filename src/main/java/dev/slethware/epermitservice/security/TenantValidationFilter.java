@@ -40,7 +40,7 @@ public class TenantValidationFilter extends OncePerRequestFilter {
         if (!TenantWhitelist.isValid(tenantId)) {
             log.warn("Rejected request — invalid or missing X-Tenant-ID: '{}'", tenantId);
             rejectWith(response, HttpServletResponse.SC_BAD_REQUEST,
-                    "Missing or invalid X-Tenant-ID header. Valid values: Ministry_Health, Ministry_Education");
+                    "Missing or invalid X-Tenant-ID header.");
             return;
         }
 

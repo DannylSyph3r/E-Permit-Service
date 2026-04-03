@@ -47,7 +47,7 @@ public class PermitController {
     @PreAuthorize("isAuthenticated()")
     @Operation(
             summary = "Get all permits for the requesting tenant",
-            description = "Returns all permits with embedded documents. Uses JOIN FETCH — single query, no N+1."
+            description = "Returns all permits with embedded documents. Uses JOIN FETCH — single query"
     )
     public ResponseEntity<ApiResponse<List<PermitResponse>>> getPermitsSummary() {
         return ResponseEntity.ok(permitService.getPermitsSummary());
