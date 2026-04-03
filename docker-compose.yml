@@ -1,19 +1,17 @@
-version: '3.9'
-
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: permit-postgres
+    container_name: epermit-postgres
     environment:
-      POSTGRES_DB: permitdb
+      POSTGRES_DB: epermitdb
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: permit_root_2026
+      POSTGRES_PASSWORD: "GwQ9Rr/uO68D1WLJSqRPrVDxlVCBHN7h5dxt3Qh2j0k="
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d permitdb"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d epermitdb"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -21,10 +19,10 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    container_name: permit-rabbitmq
+    container_name: epermit-rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: permit_rabbit
-      RABBITMQ_DEFAULT_PASS: permit_rabbit_2026
+      RABBITMQ_DEFAULT_USER: epermit_rabbit
+      RABBITMQ_DEFAULT_PASS: "g3teJy4kY7upQx6XWHOXP5ohlopQ285mtbw8fT5zX8E="
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -35,22 +33,22 @@ services:
       retries: 5
       start_period: 20s
 
-  permit-service:
+  epermit-service:
     build: .
-    container_name: permit-service
+    container_name: epermit-service
     ports:
       - "8080:8080"
     environment:
-      DB_URL: jdbc:postgresql://postgres:5432/permitdb
-      DB_USERNAME: permit_app
-      DB_PASSWORD: permit_app_2026
+      DB_URL: jdbc:postgresql://postgres:5432/epermitdb
+      DB_USERNAME: epermit_app
+      DB_PASSWORD: "nfhrBJsFfx2r+jGbL8jDNYoP8+euohsvmlc2lgGFedo="
       DB_ROOT_USERNAME: postgres
-      DB_ROOT_PASSWORD: permit_root_2026
-      JWT_SECRET: permit_service_jwt_secret_minimum_32_characters_2026
+      DB_ROOT_PASSWORD: "GwQ9Rr/uO68D1WLJSqRPrVDxlVCBHN7h5dxt3Qh2j0k="
+      JWT_SECRET: "vHAaR+jG3K8U+MWIVG5XqHcmNPuZBei64BLahIZHgftXq6N4MgJlGHscdWMauXDtbtCsVM0M+//Zynk21/702A=="
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
-      RABBITMQ_USERNAME: permit_rabbit
-      RABBITMQ_PASSWORD: permit_rabbit_2026
+      RABBITMQ_USERNAME: epermit_rabbit
+      RABBITMQ_PASSWORD: "g3teJy4kY7upQx6XWHOXP5ohlopQ285mtbw8fT5zX8E="
     depends_on:
       postgres:
         condition: service_healthy
