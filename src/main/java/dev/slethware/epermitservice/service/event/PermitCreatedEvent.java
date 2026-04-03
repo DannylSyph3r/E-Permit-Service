@@ -11,5 +11,5 @@ public record PermitCreatedEvent(
         String applicantEmail,
         PermitType permitType,
         Long amount,
-        LocalDateTime timestamp
+        LocalDateTime createdAt
 ) {}
