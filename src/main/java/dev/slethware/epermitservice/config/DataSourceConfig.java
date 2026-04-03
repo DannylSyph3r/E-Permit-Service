@@ -38,6 +38,7 @@ public class DataSourceConfig {
         config.setIdleTimeout(300_000);
         config.setMaxLifetime(600_000);
         config.setConnectionTestQuery("SELECT 1");
+        config.setInitializationFailTimeout(-1);
 
         return new TenantAwareDataSource(new HikariDataSource(config));
     }
