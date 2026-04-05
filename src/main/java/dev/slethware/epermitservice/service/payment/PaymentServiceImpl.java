@@ -25,8 +25,7 @@ public class PaymentServiceImpl implements PaymentService {
         return PaymentStatus.SUCCESS;
     }
 
-    // Invoked when retries are exhausted or circuit is open.
-    // Never throws. It Always returns FAILED so permit creation can complete gracefully.
+    // Never throws — returns FAILED so permit creation can complete gracefully.
     private PaymentStatus chargePaymentFallback(Long amount, String reference, Throwable cause) {
         log.warn("Payment fallback triggered for reference: {}. Cause: {}", reference, cause.getMessage());
         return PaymentStatus.FAILED;

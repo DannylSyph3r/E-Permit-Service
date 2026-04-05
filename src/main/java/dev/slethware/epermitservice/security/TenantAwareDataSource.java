@@ -10,8 +10,6 @@ import java.sql.Statement;
 
 // Wraps DataSource to inject the current tenant into the PostgreSQL session before each connection reaches Hibernate.
 // Drives RLS policy via SET app.current_tenant, filtering protected tables to the active tenant.
-// When no tenant is in context, the variable is reset to an empty string.
-// The RLS policy returns NULL on empty values, matching nothing by default
 @Slf4j
 public class TenantAwareDataSource extends DelegatingDataSource {
 

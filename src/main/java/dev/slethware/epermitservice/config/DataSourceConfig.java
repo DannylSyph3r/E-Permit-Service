@@ -22,8 +22,7 @@ public class DataSourceConfig {
     @Value("${spring.datasource.password}")
     private String password;
 
-    // The primary DataSource wraps HikariCP with tenant-context injection.
-    // Flyway bypasses this bean entirely to connect directly as the postgres superuser.
+    // Flyway bypasses this bean and connects directly as the postgres superuser.
     @Bean
     @Primary
     public DataSource dataSource() {

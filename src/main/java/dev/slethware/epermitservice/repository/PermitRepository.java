@@ -9,7 +9,6 @@ import java.util.UUID;
 
 public interface PermitRepository extends JpaRepository<Permit, UUID> {
 
-    // Loads all permits with their documents in one round trip.
     @Query("SELECT DISTINCT p FROM Permit p LEFT JOIN FETCH p.documents")
     List<Permit> findAllWithDocuments();
 }

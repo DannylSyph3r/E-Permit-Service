@@ -49,7 +49,6 @@ public class PermitServiceImpl implements PermitService {
         permitRepository.save(permit);
         log.info("Permit {} saved for tenant: {}", permit.getId(), tenantId);
 
-        // Auto-generate an application document for this permit.
         PermitDocument document = PermitDocument.builder()
                 .permit(permit)
                 .documentType("APPLICATION_FORM")

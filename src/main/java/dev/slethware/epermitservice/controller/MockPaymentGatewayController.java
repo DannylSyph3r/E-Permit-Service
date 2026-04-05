@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-// Simulates an external payment gateway for local testing only.
-// Sleeps 3 seconds per call to mimic network latency, then returns 503 or 200 with a payment reference
 @Slf4j
 @Hidden
 @RestController

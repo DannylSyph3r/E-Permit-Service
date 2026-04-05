@@ -19,7 +19,6 @@ public class PaymentGatewayClient {
         this.chargeUrl = "http://localhost:" + port + "/internal/payment/charge";
     }
 
-    // Calls the payment gateway. Returns normally on success (2xx).
     // Throws RuntimeException on any error response so Resilience4j can intercept.
     public void charge(Long amount, String reference) {
         log.debug("Calling payment gateway for reference: {}", reference);
